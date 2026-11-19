@@ -1,0 +1,326 @@
+/* ==============================================================================
+   DOCUMENT STUDIO - CORE PRINT & PAGED MEDIA SYSTEM
+   Optimizado para: Cero espaciados muertos, cero páginas huérfanas y máxima densidad visual
+   ============================================================================== */
+
+@page {
+    size: letter;
+    margin: 14mm 14mm 14mm 14mm;
+    
+    @top-left {
+        content: var(--doc-running-title, "DOCUMENT STUDIO");
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7pt;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #64748B;
+        border-bottom: 0.5px solid #E2E8F0;
+        padding-bottom: 3px;
+    }
+    @top-right {
+        content: var(--doc-category, "INFORME TÉCNICO");
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7pt;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: var(--primary-color, #0F172A);
+        border-bottom: 0.5px solid #E2E8F0;
+        padding-bottom: 3px;
+    }
+    @bottom-left {
+        content: var(--doc-footer-note, "Confidencial / Uso Interno");
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7pt;
+        font-style: italic;
+        color: #94A3B8;
+        border-top: 0.5px solid #E2E8F0;
+        padding-top: 3px;
+    }
+    @bottom-right {
+        content: "Página " counter(page) " de " counter(pages);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 7pt;
+        font-weight: 700;
+        color: #334155;
+        border-top: 0.5px solid #E2E8F0;
+        padding-top: 3px;
+    }
+}
+
+/* Reglas de Paginación Estricta: Prevenir Saltos y Espaciados Innecesarios */
+* {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    line-height: 1.42;
+    color: var(--text-color, #1E293B);
+    background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+}
+
+/* Supresión de saltos de página huérfanos en encabezados */
+h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    color: var(--heading-color, #0F172A);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+h1 {
+    font-size: 13pt;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+    border-bottom: 1.5px solid var(--primary-color, #0F172A);
+}
+
+h2 {
+    font-size: 10.5pt;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    color: var(--primary-color, #0F172A);
+}
+
+h3 {
+    font-size: 9.5pt;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    color: #334155;
+}
+
+p {
+    margin: 0 0 6px 0;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+/* Listas compactas */
+ul, ol {
+    margin: 0 0 6px 0;
+    padding-left: 18px;
+}
+
+li {
+    margin-bottom: 2px;
+}
+
+/* Tarjetas Atómicas: NUNCA se cortan por la mitad, pero no causan huecos gigantes */
+.card, .stat-card, .callout, .table-wrapper, pre, .figure-box {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+/* Contenedores de Tarjetas y Métricas */
+.card {
+    background-color: var(--card-bg, #F8FAFC);
+    border: 1px solid var(--border-color, #E2E8F0);
+    border-radius: 5px;
+    padding: 8px 12px;
+    margin: 6px 0;
+}
+
+.card-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: var(--primary-color, #0F172A);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* Grid de Columnas para Máxima Densidad Visual (2, 3 o 4 columnas) */
+.grid-2 {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 6px 0;
+}
+.grid-2 > .col {
+    display: table-cell;
+    width: 50%;
+    vertical-align: top;
+    padding: 0 6px;
+}
+.grid-2 > .col:first-child { padding-left: 0; }
+.grid-2 > .col:last-child { padding-right: 0; }
+
+.grid-3 {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 6px 0;
+}
+.grid-3 > .col {
+    display: table-cell;
+    width: 33.333%;
+    vertical-align: top;
+    padding: 0 5px;
+}
+.grid-3 > .col:first-child { padding-left: 0; }
+.grid-3 > .col:last-child { padding-right: 0; }
+
+.grid-4 {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 6px 0;
+}
+.grid-4 > .col {
+    display: table-cell;
+    width: 25%;
+    vertical-align: top;
+    padding: 0 4px;
+}
+.grid-4 > .col:first-child { padding-left: 0; }
+.grid-4 > .col:last-child { padding-right: 0; }
+
+/* Tarjetas de Métricas Estadísticas (KPIs) */
+.kpi-box {
+    background-color: var(--card-bg, #F8FAFC);
+    border: 1px solid var(--border-color, #E2E8F0);
+    border-radius: 5px;
+    padding: 8px 10px;
+    text-align: center;
+}
+.kpi-value {
+    font-size: 16pt;
+    font-weight: 800;
+    color: var(--primary-color, #0F172A);
+    line-height: 1.1;
+}
+.kpi-label {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* Callouts Semánticos de Información */
+.callout {
+    border-radius: 0 5px 5px 0;
+    padding: 8px 12px;
+    margin: 6px 0;
+    font-size: 8.5pt;
+}
+.callout-info {
+    background-color: #F0F9FF;
+    border-left: 3.5px solid #0284C7;
+    color: #0C4A6E;
+}
+.callout-success {
+    background-color: #F0FDF4;
+    border-left: 3.5px solid #16A34A;
+    color: #14532D;
+}
+.callout-warning {
+    background-color: #FFFBEB;
+    border-left: 3.5px solid #D97706;
+    color: #78350F;
+}
+.callout-danger {
+    background-color: #FEF2F2;
+    border-left: 3.5px solid #DC2626;
+    color: #7F1D1D;
+}
+
+/* Tablas Compactas de Alta Calidad Editorial */
+table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 8px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+table.data-table th {
+    background-color: var(--table-header-bg, #0F172A);
+    color: #FFFFFF;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 7pt;
+    letter-spacing: 0.4px;
+    padding: 5px 8px;
+    text-align: left;
+    border: 0.5px solid #334155;
+}
+
+table.data-table td {
+    padding: 4.5px 8px;
+    border: 0.5px solid var(--border-color, #CBD5E1);
+    color: #1E293B;
+}
+
+table.data-table tr:nth-child(even) {
+    background-color: var(--table-zebra, #F8FAFC);
+}
+
+/* Código y Monospaced */
+code {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 7.8pt;
+    background-color: #F1F5F9;
+    color: #0F172A;
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 0.5px solid #CBD5E1;
+}
+
+pre {
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+    font-size: 7.6pt;
+    line-height: 1.35;
+    background-color: #0F172A;
+    color: #F8FAFC;
+    padding: 8px 10px;
+    border-radius: 5px;
+    margin: 6px 0;
+    overflow-x: auto;
+}
+
+/* Portadas de Impacto sin Espacios Muertos */
+.cover-compact {
+    border-bottom: 2px solid var(--primary-color, #0F172A);
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+}
+.cover-category {
+    font-size: 8pt;
+    font-weight: 800;
+    color: var(--primary-color, #0F172A);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+}
+.cover-main-title {
+    font-size: 19pt;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.15;
+    margin: 0 0 6px 0;
+}
+.cover-lead {
+    font-size: 10pt;
+    color: #475569;
+    line-height: 1.35;
+    margin-bottom: 10px;
+}
+.cover-meta {
+    font-size: 7.5pt;
+    color: #64748B;
+    display: table;
+    width: 100%;
+}
+.cover-meta-cell {
+    display: table-cell;
+    vertical-align: middle;
+}

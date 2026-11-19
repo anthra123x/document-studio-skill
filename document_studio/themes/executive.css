@@ -1,0 +1,26 @@
+/* Theme: Executive Corporate */
+:root {
+    --primary-color: #1E3A8A; /* Deep Navy */
+    --heading-color: #0F172A;
+    --text-color: #1E293B;
+    --card-bg: #F8FAFC;
+    --border-color: #CBD5E1;
+    --table-header-bg: #1E3A8A;
+    --table-zebra: #F1F5F9;
+    --accent-gold: #D97706;
+}
+
+@page {
+    @top-right {
+        color: #1E3A8A;
+        font-weight: 700;
+    }
+}
+
+.kpi-value {
+    color: #1E3A8A;
+}
+
+h1 {
+    border-bottom: 2px solid #1E3A8A;
+}

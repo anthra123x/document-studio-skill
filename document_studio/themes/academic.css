@@ -1,0 +1,32 @@
+/* Theme: Academic & Scientific Paper */
+:root {
+    --primary-color: #991B1B; /* Deep Crimson */
+    --heading-color: #0F172A;
+    --text-color: #1E293B;
+    --card-bg: #F8FAFC;
+    --border-color: #CBD5E1;
+    --table-header-bg: #1E293B;
+    --table-zebra: #F8FAFC;
+}
+
+body {
+    font-family: "Times New Roman", Times, "Cambria", Georgia, serif;
+    font-size: 9.5pt;
+    line-height: 1.45;
+}
+
+h1, h2, h3, h4, th, .card-title, .kpi-label {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+h1 {
+    border-bottom: 1.5px solid #991B1B;
+}
+
+.apa-reference {
+    padding-left: 2em;
+    text-indent: -2em;
+    margin-bottom: 6px;
+    font-size: 8.5pt;
+    text-align: justify;
+}

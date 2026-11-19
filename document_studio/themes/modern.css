@@ -1,0 +1,25 @@
+/* Theme: Modern Tech & Developer Whitepaper */
+:root {
+    --primary-color: #4F46E5; /* Indigo */
+    --heading-color: #111827;
+    --text-color: #374151;
+    --card-bg: #F9FAFB;
+    --border-color: #E5E7EB;
+    --table-header-bg: #312E81;
+    --table-zebra: #F3F4F6;
+}
+
+@page {
+    @top-right {
+        color: #4F46E5;
+        font-weight: 700;
+    }
+}
+
+.kpi-value {
+    color: #4F46E5;
+}
+
+h1 {
+    border-bottom: 2px solid #4F46E5;
+}
