@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Builder de documentos PDF con API fluida y estructurada.
-Elimina la necesidad de escribir scripts auxiliares desechables o maquetar HTML crudo.
+Soporta inyección directa de patrones de diseño definidos por el usuario.
 """
 
 import os
 from typing import List, Dict, Optional, Union
 from .compiler import compile_pdf
+from ..pattern import DesignPattern
 
 THEMES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "themes"))
 
@@ -15,17 +16,18 @@ class Document:
         self,
         title: str = "Documento",
         category: str = "DOCUMENTO TÉCNICO",
-        theme: str = "modern",
+        pattern: Optional[Union[str, DesignPattern, Dict]] = None,
+        theme: Optional[str] = None,
         size: str = "letter",
         running_title: Optional[str] = None,
-        footer_note: str = "Confidencial / Uso Interno"
+        footer_note: Optional[str] = None
     ):
         self.title = title
         self.category = category
-        self.theme = theme.lower()
-        self.size = size.lower()
+        self.pattern = DesignPattern.resolve(pattern or theme or "modern")
+        self.size = (size or self.pattern.page_size).lower()
         self.running_title = running_title or title
-        self.footer_note = footer_note
+        self.footer_note = footer_note if footer_note is not None else self.pattern.footer_note
         self.elements: List[str] = []
         self._cover_html: Optional[str] = None
 
@@ -155,17 +157,13 @@ class Document:
         return self
 
     def build_html(self) -> str:
-        """Ensambla el documento completo con CSS base y tema seleccionado."""
-        # Cargar CSS base
+        """Ensambla el documento completo aplicando el patrón de diseño."""
         base_css_file = os.path.join(THEMES_DIR, "base.css")
         with open(base_css_file, "r", encoding="utf-8") as f:
             css = f.read()
 
-        # Cargar CSS del tema si existe
-        theme_css_file = os.path.join(THEMES_DIR, f"{self.theme}.css")
-        if os.path.exists(theme_css_file):
-            with open(theme_css_file, "r", encoding="utf-8") as f:
-                css += "\n" + f.read()
+        # Inyectar CSS generado directamente del patrón
+        pattern_css = self.pattern.to_css()
 
         body_content = ""
         if self._cover_html:
@@ -184,6 +182,7 @@ class Document:
             --doc-footer-note: "{self.footer_note}";
         }}
         {css}
+        {pattern_css}
     </style>
 </head>
 <body>

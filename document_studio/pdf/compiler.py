@@ -101,3 +101,4 @@ def compile_pdf(
                 pass
 
     return success
+

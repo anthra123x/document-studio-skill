@@ -84,3 +84,4 @@ if success:
     print(f"✓ Documento PDF generado exitosamente: {output_file} ({sz:.1f} KB)")
 else:
     print("✗ Error al generar el documento PDF")
+

@@ -113,3 +113,4 @@ class Diagram:
         </div>
         """
         return cls.render_html(html, output_png, width=width, height=height)
+

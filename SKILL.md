@@ -11,7 +11,7 @@ description: >-
 
 `document-studio` es el estándar y motor de publicación del agente para generar **documentos en PDF** y **presentaciones en PowerPoint (PPTX)** de alta fidelidad técnica y estética editorial.
 
-El propósito central de esta skill es **eliminar la proliferación de scripts intermedios y archivos desechables**: proporciona una API unificada en Python (`Document`, `Presentation`, `Diagram`) y un sistema de estilos CSS Paged Media que resuelve automáticamente la paginación, la supresión de espacios en blanco y el contraste.
+El propósito central de esta skill es **eliminar la proliferación de scripts intermedios y archivos desechables**: proporciona una API unificada en Python (`Document`, `Presentation`, `Diagram`, `DesignPattern`) y un sistema de estilos CSS Paged Media que resuelve automáticamente la paginación, la supresión de espacios en blanco y el contraste con base en el patrón de diseño que determine el usuario.
 
 ---
 
@@ -26,7 +26,43 @@ Activa esta skill inmediatamente cuando el usuario pida:
 
 ---
 
-## 2. Los Dos Mandamientos Editoriales (Zero-Slop & Zero-Gap)
+## 2. Flujo de Trabajo Esperado (User-Driven Design Pattern)
+
+El flujo de trabajo estándar consta de 4 fases continuas y sin fricción:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FASE 1: DEFINICIÓN DEL PATRÓN POR EL USUARIO                                │
+│ El usuario indica el patrón visual: por preset ('executive', 'modern',      │
+│ 'academic_ufps', 'dark', 'minimal'), por tokens (colores, fuentes) o por    │
+│ descripción en lenguaje natural.                                            │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FASE 2: RESOLUCIÓN E INGESTA AUTOMÁTICA EN LA SKILL                         │
+│ La clase `DesignPattern.resolve(...)` mapea el patrón a tokens cromáticos,  │
+│ tipografía y geometría @page de forma transparente.                         │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FASE 3: CONSTRUCCIÓN EN UNA SOLA PASADA (PYTHON NATIVO)                     │
+│ El agente utiliza `Document(pattern=...)` o `Presentation(pattern=...)`.    │
+│ Cero creación de scripts auxiliares, cero archivos HTML intermedios.        │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FASE 4: COMPILACIÓN & VERIFICACIÓN INMEDIATA                                │
+│ Compilación directa a PDF o guardado a PPTX. Auditoría de páginas con       │
+│ `pdfinfo` para certificar cero huecos vacíos y entrega con enlace file:///. │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Los Dos Mandamientos Editoriales (Zero-Slop & Zero-Gap)
 
 1. **Cero Espaciados Muertos ni Páginas Vacías:**
    - La regla CSS `page-break-inside: avoid` (o `break-inside: avoid`) se aplica **únicamente a elementos atómicos** (`.card`, `.kpi-box`, `.callout`, filas de tabla, bloques de código `pre`). **PROHIBIDO** aplicarla a contenedores grandes o secciones enteras, ya que esto empuja bloques grandes a la siguiente página dejando media página en blanco.
@@ -35,28 +71,56 @@ Activa esta skill inmediatamente cuando el usuario pida:
 
 2. **Cero Proliferación de Archivos Temporales:**
    - No crees múltiples scripts `make_part1.py`, `make_part2.py`, `temp.html` dispersos en el proyecto.
-   - Utiliza la clase `Document` o `Presentation` directamente desde Python en un único archivo o script limpio de ejecución.
+   - Utiliza la clase `Document` o `Presentation` directamente desde Python en un único archivo o bloque limpio de ejecución.
 
 ---
 
-## 3. Generación de Documentos PDF en 15 Líneas de Código
+## 4. Cómo Aplicar Patrones de Diseño
 
-No escribas HTML crudo desde cero si no es necesario. Usa la API fluida de `document_studio`:
+### Opción A: Usar un Patrón Predefinido
+```python
+from document_studio import Document, Presentation
+
+# Presets disponibles: 'executive', 'modern', 'academic_ufps', 'minimal', 'dark'
+doc = Document(title="Auditoría de Sistemas", pattern="executive")
+deck = Presentation(title="Presentación de Resultados", pattern="executive")
+```
+
+### Opción B: Definir un Patrón Personalizado por el Usuario
+Cuando el usuario define colores corporativos, tipografía o márgenes específicos:
+```python
+from document_studio import Document, DesignPattern
+
+patron_usuario = DesignPattern(
+    name="Fintech Corporativo",
+    primary_color="#0A2540",      # Azul medianoche corporativo
+    secondary_color="#635BFF",    # Violeta Stripe
+    accent_color="#00D4FF",       # Cian de resalte
+    card_bg="#F8FAFD",
+    border_color="#E3E8EE",
+    font_heading="Inter, -apple-system, sans-serif",
+    page_size="letter",
+    footer_note="Confidencial · Uso Interno"
+)
+
+doc = Document(title="Reporte Financiero", pattern=patron_usuario)
+```
+
+---
+
+## 5. Generación de Documentos PDF en 15 Líneas de Código
 
 ```python
 from document_studio import Document
 
-# 1. Instanciar documento con tema ('executive', 'modern', 'academic', 'minimal')
 doc = Document(
     title="Evaluación de Arquitectura de Microservicios",
     category="INFORME DE INGENIERÍA",
-    theme="executive", # o 'modern', 'academic', 'minimal'
-    size="letter",     # o 'a4'
-    running_title="AUDITORÍA DE INFRAESTRUCTURA 2026",
-    footer_note="Confidencial · Uso Interno"
+    pattern="modern",
+    running_title="AUDITORÍA DE INFRAESTRUCTURA 2026"
 )
 
-# 2. Portada compacta integrada (no genera páginas en blanco innecesarias)
+# Portada compacta integrada (no genera páginas en blanco innecesarias)
 doc.set_cover(
     title="Evaluación de Arquitectura de Microservicios",
     subtitle="Análisis de latencia, concurrencia y costos operativos en Kubernetes",
@@ -65,7 +129,7 @@ doc.set_cover(
     date="Noviembre 2026"
 )
 
-# 3. Métricas clave (KPIs) en 2, 3 o 4 columnas
+# Métricas clave (KPIs) en 2, 3 o 4 columnas
 doc.add_kpis([
     {"value": "99.99%", "label": "Disponibilidad"},
     {"value": "18.5 ms", "label": "Latencia p95"},
@@ -73,14 +137,14 @@ doc.add_kpis([
     {"value": "-34%", "label": "Ahorro de Costos"}
 ])
 
-# 4. Secciones y párrafos con tipografía justificada
+# Secciones y párrafos con tipografía justificada
 doc.add_section("1. Resumen Ejecutivo")
 doc.add_paragraph("Este informe resume los hallazgos tras la migración a clusters distribuidos...")
 
-# 5. Callouts semánticos ('info', 'success', 'warning', 'danger')
+# Callouts semánticos ('info', 'success', 'warning', 'danger')
 doc.add_callout("Recomendación Crítica", "Habilitar mTLS en todos los enlaces inter-servicio.", kind="warning")
 
-# 6. Tablas con diseño editorial compacto
+# Tablas con diseño editorial compacto
 doc.add_table(
     headers=["Servicio", "Instancias", "CPU Media", "Memoria", "Estado"],
     rows=[
@@ -90,32 +154,13 @@ doc.add_table(
     ]
 )
 
-# 7. Columnas paralelas para conclusiones o tarjetas
-doc.add_columns([
-    "<div class='card'><div class='card-title'>Ventajas</div><p>Escalabilidad horizontal desacoplada.</p></div>",
-    "<div class='card'><div class='card-title'>Riesgos</div><p>Mayor complejidad en observabilidad.</p></div>"
-])
-
-# 8. Renderizar directamente al PDF final
+# Renderizar directamente al PDF final en una sola instrucción
 doc.render("reporte_final.pdf")
 ```
 
 ---
 
-## 4. Temas Disponibles
-
-| Tema | Clave | Paleta Primaria | Estilo Tipográfico | Recomendado Para |
-| :--- | :---: | :--- | :--- | :--- |
-| **Executive** | `executive` | Deep Navy (`#1E3A8A`), Slate, Oro (`#D97706`) | Sans-serif sobrio y corporativo | Informes directivos, auditorías, finanzas. |
-| **Modern Tech** | `modern` | Indigo (`#4F46E5`), Zinc, Cian | Tipografía moderna de alta legibilidad | Documentación de software, whitepapers, APIs. |
-| **Academic** | `academic` | Carmesí (`#991B1B`), Slate, Blanco | Serif formal en cuerpo, sans en títulos | Tesis, artículos científicos, guías de estudio. |
-| **Minimal** | `minimal` | Monocromático Negro/Blanco (`#000000`) | Suiza internacional de alta densidad | Cheat sheets, especificaciones, diagramas. |
-
----
-
-## 5. Generación de Presentaciones Panorámicas (PPTX 16:9)
-
-Para crear diapositivas limpias con badges de contexto y cero texto de bajo contraste:
+## 6. Generación de Presentaciones Panorámicas (PPTX 16:9)
 
 ```python
 from document_studio import Presentation, Diagram
@@ -132,8 +177,8 @@ Diagram.flow(
     output_png=diagram_file
 )
 
-# 2. Construir la presentación
-deck = Presentation(title="Estrategia Cloud 2026", theme="executive")
+# 2. Construir la presentación aplicando el patrón del usuario
+deck = Presentation(title="Estrategia Cloud 2026", pattern="executive")
 
 deck.add_slide(
     title="Arquitectura de Datos y Escalabilidad",
@@ -148,23 +193,6 @@ deck.add_slide(
 )
 
 deck.save("presentacion_final.pptx")
-```
-
----
-
-## 6. Motor de Compilación Headless (CLI y Script)
-
-El compilador de `document_studio` detecta automáticamente el binario disponible en el entorno (`brave`, `chromium`, `google-chrome` o `weasyprint`) y aplica las banderas de compilación estricta:
-- `--no-pdf-header-footer` (elimina cabeceras residuales con URLs o fechas del navegador).
-- `--run-all-compositor-stages-before-draw` (garantiza renderizado total de vectores y fuentes web).
-
-Desde la terminal:
-```bash
-python3 -m document_studio.cli compile entrada.html salida.pdf
-```
-O generación rápida:
-```bash
-python3 -m document_studio.cli quick-report --title "Balance Trimestral" --output balance.pdf --theme executive
 ```
 
 ---

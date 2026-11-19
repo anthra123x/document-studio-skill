@@ -57,3 +57,4 @@ if success:
     print(f"✓ Presentación PPTX generada exitosamente: {output_deck} ({sz:.1f} KB)")
 else:
     print("✗ Error al generar la presentación PPTX")
+

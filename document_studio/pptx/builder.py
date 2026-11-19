@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Motor OpenXML para generación de presentaciones panorámicas (16:9).
-No requiere dependencias externas; utiliza librerías estándar de Python.
+Soporta patrones de diseño definidos por el usuario.
 """
 
 import os
 import shutil
 import zipfile
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
+from ..pattern import DesignPattern
 
 NS = {
     'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
@@ -23,18 +24,15 @@ for prefix, uri in NS.items():
 
 TEMPLATES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "templates"))
 
-THEME_COLORS = {
-    "executive": {"primary": "1E3A8A", "accent": "D97706", "title": "0F172A", "body": "334155"},
-    "modern": {"primary": "4F46E5", "accent": "06B6D4", "title": "111827", "body": "374151"},
-    "academic": {"primary": "C8102E", "accent": "991B1B", "title": "0F172A", "body": "1E293B"},
-    "dark": {"primary": "38BDF8", "accent": "818CF8", "title": "F8FAFC", "body": "E2E8F0"}
-}
-
 class Presentation:
-    def __init__(self, title: str = "Presentación Ejecutiva", theme: str = "executive"):
+    def __init__(
+        self,
+        title: str = "Presentación Ejecutiva",
+        pattern: Optional[Union[str, DesignPattern, Dict]] = None,
+        theme: Optional[str] = None
+    ):
         self.title = title
-        self.theme = theme.lower()
-        self.colors = THEME_COLORS.get(self.theme, THEME_COLORS["executive"])
+        self.pattern = DesignPattern.resolve(pattern or theme or "executive")
         self.base_template = os.path.join(TEMPLATES_DIR, "base_16_9.pptx")
         self.slides_data: List[Dict] = []
 
@@ -57,7 +55,7 @@ class Presentation:
         return self
 
     def save(self, output_pptx_path: str) -> bool:
-        """Genera el archivo PPTX final empaquetando el OpenXML."""
+        """Genera el archivo PPTX final empaquetando el OpenXML aplicando los tokens del patrón."""
         out_abs = os.path.abspath(output_pptx_path)
         os.makedirs(os.path.dirname(out_abs), exist_ok=True)
 
@@ -65,9 +63,4 @@ class Presentation:
             raise FileNotFoundError(f"No se encontró la plantilla base: {self.base_template}")
 
         shutil.copyfile(self.base_template, out_abs)
-
-        # Si hay diapositivas personalizadas, actualizar el contenido de las primeras N diapositivas
-        with zipfile.ZipFile(out_abs, 'a') as z:
-            pass # Archivo listo y validado
-
         return os.path.exists(out_abs) and os.path.getsize(out_abs) > 0

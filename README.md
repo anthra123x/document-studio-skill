@@ -72,3 +72,4 @@ doc.add_section("1. Resultados Financieros")
 doc.add_paragraph("Durante el presente ejercicio se consolidó la expansión regional...")
 doc.render("balance.pdf")
 ```
+

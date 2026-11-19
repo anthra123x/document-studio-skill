@@ -7,6 +7,7 @@ from .pdf.builder import Document
 from .pptx.builder import Presentation
 from .diagrams.generator import Diagram
 from .pdf.compiler import compile_pdf
+from .pattern import DesignPattern
 
-__version__ = "1.0.0"
-__all__ = ["Document", "Presentation", "Diagram", "compile_pdf"]
+__version__ = "1.1.0"
+__all__ = ["Document", "Presentation", "Diagram", "compile_pdf", "DesignPattern"]
